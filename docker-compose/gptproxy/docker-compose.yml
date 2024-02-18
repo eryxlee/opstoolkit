@@ -1,0 +1,38 @@
+version: '3'
+services:
+  chatgpt:
+    container_name: chatgpt_proxy
+    image: 'ydlhero/chatgpt-web-midjourney-proxy'
+    environment:
+     - OPENAI_API_KEY=${OPENAI_API_KEY}
+     - OPENAI_API_BASE_URL=${OPENAI_API_BASE_URL}
+     - AUTH_SECRET_KEY=${AUTH_SECRET_KEY}
+     - MJ_SERVER=midjourney:8080
+     - MJ_API_SECRET=abc123456
+     - API_UPLOADER=1
+    ports:
+      - 8081:3002
+    volumes:
+      - /data/uploads:/app/uploads
+    networks:
+      - gptproxy
+    depends_on:
+      - midjourney
+
+  midjourney:
+    container_name: midjourney_proxy
+    image: 'novicezk/midjourney-proxy:2.5.5'
+    environment:
+     - mj.discord.guild-id=${MJ_DISCORD_GUILD_ID}
+     - mj.discord.channel-id=${MJ_DISCORD_CHANNEL_ID}
+     - mj.queue.timeout-minutes=6
+     - mj.api-secret=abc123456
+     - mj.discord.user-token=${MJ_DISCORD_USER_TOKEN}
+    ports:
+      - 8080:8080
+    networks:
+      - gptproxy
+
+networks:
+  gptproxy:
+
