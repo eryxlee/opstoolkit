@@ -1,0 +1,113 @@
+- name: Update apt Cache
+  apt:
+    update_cache: yes
+    force_apt_get: yes
+
+- name: Wait for APT Lock
+  shell: while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 5; done;
+
+# Systemctl从失败的列表中删除失效的服务单元
+- name: reset failed service
+  ansible.builtin.shell: systemctl reset-failed
+
+# 关闭NetworkManager
+- name: check NetworkManager status
+  ansible.builtin.shell: 'systemctl status NetworkManager >/dev/null 2>&1'
+  ignore_errors: true
+  register: nm_status
+
+- name: ensure NetworkManager service stopped
+  ansible.builtin.systemd:
+    name: NetworkManager
+    state: stopped
+    enabled: no
+  when: nm_status.rc < 4
+
+# systemd-networkd
+- name: check systemd-networkd status
+  ansible.builtin.shell: systemctl status systemd-networkd
+  ignore_errors: true
+  register: sn_status
+
+- name: ensure systemd-networkd service running
+  ansible.builtin.service:
+    name: systemd-networkd
+    state: started
+    enabled: yes
+  when: sn_status.rc < 4
+
+- name: Install required packages
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+      - net-tools
+      - sysstat
+      - iftop
+      - jq
+      - bat
+
+- name: set soft nofile ulimit for root
+  community.general.pam_limits:
+    domain: root
+    limit_type: soft
+    limit_item: nofile
+    value: 65535
+    use_max: true
+
+- name: set hard nofile ulimit for root
+  community.general.pam_limits:
+    domain: root
+    limit_type: hard
+    limit_item: nofile
+    value: 65535
+    use_max: true
+
+- name: set soft nofile ulimit for all user
+  community.general.pam_limits:
+    domain: "*"
+    limit_type: soft
+    limit_item: nofile
+    value: 65535
+    use_max: true
+
+- name: set hard nofile ulimit for all user
+  community.general.pam_limits:
+    domain: "*"
+    limit_type: hard
+    limit_item: nofile
+    value: 65535
+    use_max: true
+
+- name: set sysctl parameter
+  sysctl:
+    name: '{{ item.key }}'
+    value: '{{ item.value }}'
+    sysctl_set: yes
+    state: present
+    reload: yes
+    ignoreerrors: yes
+  with_dict: '{{ sysctl_config }}'
+
+- name: disable apt auto upgrade
+  ansible.builtin.template:
+    src: 20auto-upgrades
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+
+- name: remove snap package and snapd
+  ansible.builtin.script: "remove_snap.sh"
+
+- name: disable auto install snap
+  ansible.builtin.template:
+    src: nosnap.pref
+    dest: /etc/apt/preferences.d/nosnap.pref
+    owner: root
+    group: root
+    mode: '0644'
+    backup: true
+

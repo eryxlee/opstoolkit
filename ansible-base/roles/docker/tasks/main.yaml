@@ -1,0 +1,38 @@
+- name: Install required packages
+  apt:
+    name: "{{ docker_required_packages }}"
+    state: present
+
+- name: Add Docker’s official GPG key
+  apt_key:
+    url: "{{ docker_gpg_url }}"
+    state: present
+
+- name: Add Docker APT repository
+  apt_repository:
+    repo: "deb {{ docker_repo }} {{ ansible_distribution_release }} stable"
+    state: present
+
+- name: Install Docker
+  apt:
+    name: "{{ docker_packges }}"
+    state: present
+    update_cache: yes
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: copy file 
+  template: src=daemon.json dest=/etc/docker/daemon.json
+  notify: 
+  - restart docker 
+
+# - name: Add adminstrator to docker group
+#   user:
+#     name: "{{ admin_user }}"
+#     groups: docker
+#     append: yes
+

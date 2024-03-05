@@ -1,0 +1,8 @@
+- name: setup common server
+  hosts: master
+  become: true
+  become_user: root
+  become_method: sudo
+  roles:
+  - common
+  - docker

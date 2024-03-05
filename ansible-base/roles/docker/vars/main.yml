@@ -1,0 +1,16 @@
+---
+docker_required_packages:
+  - "apt-transport-https"
+  - "ca-certificates"
+  - "curl"
+  - "gnupg"
+  - "lsb-release"
+# http://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg 阿里云镜像
+docker_gpg_url: https://download.docker.com/linux/ubuntu/gpg
+docker_repo: https://download.docker.com/linux/ubuntu
+docker_packges:
+  - "docker-ce"
+  - "docker-ce-cli"
+  - "containerd.io"
+  - "docker-compose-plugin"
+  # - "docker-buildx-plugin"
