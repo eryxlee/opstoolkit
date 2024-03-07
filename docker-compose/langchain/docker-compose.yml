@@ -1,0 +1,11 @@
+services:
+  langchain:
+    image: eryxlee0901/langchain:latest
+    tty: true
+    restart: no
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/app
+    env_file:
+      - .env
