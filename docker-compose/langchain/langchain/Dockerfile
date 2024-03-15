@@ -6,7 +6,11 @@ RUN apt-get -y update && \
   pip install langchain_openai && \
   pip install "langserve[all]" && \
   pip install datasets && \
-  pip install faiss-cpu
+  pip install faiss-cpu && \
+  pip install beautifulsoup4 && \
+  pip install langchainhub && \
+  pip install langchain-cli && \
+  pip install langsmith
 
 WORKDIR /app
 
