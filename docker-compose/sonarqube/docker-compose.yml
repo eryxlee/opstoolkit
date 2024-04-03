@@ -1,0 +1,47 @@
+# sonarqube compose 文件，运行前需要先创建目录 https://github.com/SonarSource/docker-sonarqube/blob/master/example-compose-files/sq-with-postgres/docker-compose.yml
+# mkdir -p /data/docker/sonarqube/{postgresql,sonarqube_extensions,sonarqube_logs,sonarqube_data}
+# chmod 777 -R /data/docker/sonarqube/
+# 同时，需要配置内核参数
+# vm.max_map_count=262144
+version: "3"
+services:
+  sonarqube:
+    image: sonarqube:lts-community
+    restart: always
+    container_name: sonarqube
+    depends_on:
+      - postgresdb
+    environment:
+      TZ: Asia/Shanghai
+      SONAR_JDBC_URL: jdbc:postgresql://postgresdb:5432/sonar
+      SONAR_JDBC_USERNAME: sonar
+      SONAR_JDBC_PASSWORD: sonar
+    volumes:
+      - /data/docker/sonarqube/sonarqube_data:/opt/sonarqube/data
+      - /data/docker/sonarqube/sonarqube_extensions:/opt/sonarqube/extensions
+      - /data/docker/sonarqube/sonarqube_logs:/var/log/sonarqube/logs
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 9000:9000
+  postgresdb:
+    image: postgres:12
+    restart: always
+    container_name: postgres
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    ports:
+      - 5432:5432
+    environment:
+      TZ: Asia/Shanghai
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: sonar
+      POSTGRES_DB: sonar
+    volumes:
+      - /data/docker/sonarqube/postgresql:/var/lib/postgresql/data
+      - /etc/localtime:/etc/localtime:ro
+# volumes:
+#   sonarqube_data:
+#   sonarqube_extensions:
+#   sonarqube_logs:
+#   postgresql:
+#   postgresql_data:
