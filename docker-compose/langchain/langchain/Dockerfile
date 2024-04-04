@@ -10,7 +10,8 @@ RUN apt-get -y update && \
   pip install beautifulsoup4 && \
   pip install langchainhub && \
   pip install langchain-cli && \
-  pip install langsmith
+  pip install langsmith && \
+  pip install pydantic==1.10.13
 
 WORKDIR /app
 
