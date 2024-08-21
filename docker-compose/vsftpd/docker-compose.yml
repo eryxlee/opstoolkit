@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  vsftpd:
+    build:
+      context: .
+    platform: linux/amd64
+    ports:
+      - "21:21"
+      - "21100-21110:21100-21110"
+    volumes:
+      - ./data:/home/vsftpd
+    environment:
+      FTP_USER: myuser
+      FTP_PASS: mypass
+      PASV_ADDRESS: 192.168.6.95
+      PASV_MIN_PORT: 21100
+      PASV_MAX_PORT: 21110
+    restart: unless-stopped
