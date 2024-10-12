@@ -5,14 +5,19 @@ sysctl_config:
   kernel.msgmnb: 65536
   kernel.msgmax: 65536
   vm.swappiness: 10
+  # 优化写入缓存的刷新频率，减少磁盘I/O压力
+  # vm.dirty_ratio=15
+  # vm.dirty_background_ratio=5
+  # 对使用大量内存的应用（如数据库）启用大页内存，减少内存页的分配和管理开销
+  # vm.nr_hugepages=256
   net.core.somaxconn: 65535
   net.core.netdev_max_backlog: 65535
-  net.ipv4.tcp_max_syn_backlog: 65535
-  net.ipv4.tcp_syncookies: 1
   net.core.rmem_default: 26214400
   net.core.wmem_default: 26214400
   net.core.rmem_max: 26214400
   net.core.wmem_max: 26214400
+  net.ipv4.tcp_max_syn_backlog: 65535
+  net.ipv4.tcp_syncookies: 1
   net.ipv4.tcp_rmem: 4096 26214400 26214400
   net.ipv4.tcp_syn_retries: 2
   net.ipv4.tcp_synack_retries: 1
