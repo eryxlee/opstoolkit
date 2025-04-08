@@ -94,7 +94,7 @@ brew install --cask font-source-code-pro
 #     minikube
 
 # 安装虚拟环境
-# brew install colima docker docker-compose
+# brew install  docker docker-compose colima
 
 # AI 开发工具
 # brew install libtensorflow openblas lapack numpy
